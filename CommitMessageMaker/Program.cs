@@ -39,27 +39,13 @@ internal static class Program
             throw new NotImplementedException("Proxy mode equals 'false' is not implemented");
         }
 
-        /*while (Console.ReadLine() is { } rawInput)
-        {
-            Console.WriteLine($"RAW:{rawInput}");
-            ApiRequestDto requestDto = new()
-            {
-                Prompt =
-                    $"I want you to act as a commit message generator. I will provide you with information about the task and the prefix for the task code, and I would like you to generate an appropriate commit message using the conventional commit format. Do not write any explanations or other words, just reply with the commit message:\n{rawInput}",
-                ApiKey = keyValue!
-            };
-            string response = await PostRequest(proxyAddressValue!, requestDto);
-            Console.WriteLine(response);
-            break;
-        }*/
-
         StringBuilder inputBuilder = new();
         
         using (StreamReader reader = new(Console.OpenStandardInput(), Console.InputEncoding))
         {
             while (await reader.ReadLineAsync() is { } rawInput)
             {
-                inputBuilder.AppendLine(rawInput); // Append the line to the StringBuilder
+                inputBuilder.AppendLine(rawInput);
             }
         }
 

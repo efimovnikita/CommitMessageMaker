@@ -13,4 +13,8 @@
         <PackageReference Include="OpenAiNg" Version="2.2.9" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\CommitMessageMaker.Shared\CommitMessageMaker.Shared.csproj" />
+    </ItemGroup>
+
 </Project>

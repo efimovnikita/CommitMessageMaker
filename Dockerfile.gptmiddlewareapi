@@ -1,0 +1,26 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0-jammy AS build-env
+
+WORKDIR /source
+
+COPY *.sln .
+COPY ./CommitMessageMaker.Shared/CommitMessageMaker.Shared.csproj ./CommitMessageMaker.Shared/
+COPY ./GptMiddlewareApi/GptMiddlewareApi.csproj ./GptMiddlewareApi/
+
+COPY ./CommitMessageMaker.Shared/ ./CommitMessageMaker.Shared/
+COPY ./GptMiddlewareApi/ ./GptMiddlewareApi/
+
+RUN dotnet publish ./CommitMessageMaker.Shared/CommitMessageMaker.Shared.csproj -c Release -o /app/publish/CommitMessageMaker.Shared
+RUN dotnet publish ./GptMiddlewareApi/GptMiddlewareApi.csproj -c Release -o /app/publish/GptMiddlewareApi
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy AS runtime
+WORKDIR /app
+
+RUN mkdir -p /app/CommitMessageMaker.Shared
+RUN mkdir -p /app/GptMiddlewareApi
+
+COPY --from=build-env /app/publish/CommitMessageMaker.Shared /app/CommitMessageMaker.Shared
+COPY --from=build-env /app/publish/GptMiddlewareApi /app/GptMiddlewareApi
+
+EXPOSE 80
+
+ENTRYPOINT ["dotnet", "/app/GptMiddlewareApi/GptMiddlewareApi.dll"]

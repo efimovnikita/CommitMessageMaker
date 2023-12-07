@@ -20,4 +20,8 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\CommitMessageMaker.Shared\CommitMessageMaker.Shared.csproj" />
+    </ItemGroup>
+
 </Project>

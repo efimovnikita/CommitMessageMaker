@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommitMessageMaker", "Commi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GptMiddlewareApi", "GptMiddlewareApi\GptMiddlewareApi.csproj", "{0F423974-5ED6-4ED3-BF27-2708BDF6BF1A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommitMessageMaker.Shared", "CommitMessageMaker.Shared\CommitMessageMaker.Shared.csproj", "{37B57ED4-F8DD-48C3-BE9F-EE166418335A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{0F423974-5ED6-4ED3-BF27-2708BDF6BF1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F423974-5ED6-4ED3-BF27-2708BDF6BF1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F423974-5ED6-4ED3-BF27-2708BDF6BF1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37B57ED4-F8DD-48C3-BE9F-EE166418335A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37B57ED4-F8DD-48C3-BE9F-EE166418335A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37B57ED4-F8DD-48C3-BE9F-EE166418335A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37B57ED4-F8DD-48C3-BE9F-EE166418335A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

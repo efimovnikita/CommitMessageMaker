@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Text;
+using System.Text.Json;
+using CommitMessageMaker.Shared;
+using Microsoft.Extensions.Configuration;
 
 namespace CommitMessageMaker;
 
@@ -6,7 +9,8 @@ internal static class Program
 {
     private static IConfiguration? Configuration { get; set; }
 
-    private static void Main(string[] args)
+    // ReSharper disable once UnusedParameter.Local
+    static async Task Main(string[] args)
     {
         string homePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
@@ -20,18 +24,71 @@ internal static class Program
 
         const string? keyParamName = "OpenAiApiKey";
         const string? proxyModeParamName = "ProxyMode";
-        const string? proxyIpParamName = "ProxyIp";
+        const string? proxyAddressParamName = "ProxyAddress";
 
         string? keyValue = Configuration[$"Settings:{keyParamName}"];
         string? proxyModeValue = Configuration[$"Settings:{proxyModeParamName}"];
-        string? proxyIpValue = Configuration[$"Settings:{proxyIpParamName}"];
+        string? proxyAddressValue = Configuration[$"Settings:{proxyAddressParamName}"];
         
-        ValidateConfigParameters(keyValue, proxyIpValue, proxyModeValue, configPath, keyParamName, proxyIpParamName, proxyModeParamName);
+        ValidateConfigParameters(keyValue, proxyAddressValue, proxyModeValue, configPath, keyParamName, proxyAddressParamName, proxyModeParamName);
+
+        bool proxyMode = Boolean.Parse(proxyModeValue!);
         
-        while (Console.ReadLine() is { } rawDiff)
+        if (proxyMode == false)
         {
-            
+            throw new NotImplementedException("Proxy mode equals 'false' is not implemented");
         }
+
+        /*while (Console.ReadLine() is { } rawInput)
+        {
+            Console.WriteLine($"RAW:{rawInput}");
+            ApiRequestDto requestDto = new()
+            {
+                Prompt =
+                    $"I want you to act as a commit message generator. I will provide you with information about the task and the prefix for the task code, and I would like you to generate an appropriate commit message using the conventional commit format. Do not write any explanations or other words, just reply with the commit message:\n{rawInput}",
+                ApiKey = keyValue!
+            };
+            string response = await PostRequest(proxyAddressValue!, requestDto);
+            Console.WriteLine(response);
+            break;
+        }*/
+
+        StringBuilder inputBuilder = new();
+        
+        using (StreamReader reader = new(Console.OpenStandardInput(), Console.InputEncoding))
+        {
+            while (await reader.ReadLineAsync() is { } rawInput)
+            {
+                inputBuilder.AppendLine(rawInput); // Append the line to the StringBuilder
+            }
+        }
+
+        string allInput = inputBuilder.ToString();
+        
+        ApiRequestDto requestDto = new()
+        {
+            Prompt =
+                $"I want you to act as a commit message generator. I will provide you with information about the task and the prefix for the task code, and I would like you to generate an appropriate commit message using the conventional commit format. Do not write any explanations or other words, just reply with the commit message:\n{allInput}",
+            ApiKey = keyValue!
+        };
+        string response = await PostRequest(proxyAddressValue!, requestDto);
+        Console.WriteLine(response);
+    }
+    
+    private static async Task<string> PostRequest(string apiEndpoint, ApiRequestDto apiRequestDto)
+    {
+        using HttpClient client = new();
+        string payload = JsonSerializer.Serialize(apiRequestDto);
+
+        using HttpRequestMessage request = new();
+        request.Method = HttpMethod.Post;
+        request.RequestUri = new Uri(apiEndpoint);
+        request.Content = new StringContent(content: payload, encoding: Encoding.UTF8, mediaType: "application/json");
+
+        using HttpResponseMessage response = await client.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+    
+        return await response.Content.ReadAsStringAsync();
     }
 
     private static void ValidateConfigParameters(string? keyValue, string? proxyIpValue, string? proxyModeValue,

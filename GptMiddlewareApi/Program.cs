@@ -1,21 +1,24 @@
+using CommitMessageMaker.Shared;
+using OpenAiNg;
+using OpenAiNg.Chat;
+using OpenAiNg.Models;
+
 namespace GptMiddlewareApi;
 
 public class Program
 {
     public static void Main(string[] args)
     {
-        var builder = WebApplication.CreateBuilder(args);
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
         builder.Services.AddAuthorization();
 
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddCors();
 
-        var app = builder.Build();
+        WebApplication app = builder.Build();
 
-        // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -23,28 +26,41 @@ public class Program
         }
 
         app.UseHttpsRedirection();
-
         app.UseAuthorization();
 
-        var summaries = new[]
+        app.MapPost("/AskLlm", async (ApiRequestDto input, HttpContext _, ILogger<Program> logger) =>
         {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+            logger.LogInformation("Received a request with prompt: {Prompt}", input.Prompt);
 
-        app.MapGet("/weatherforecast", (HttpContext httpContext) =>
+            try
             {
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                        new WeatherForecast
-                        {
-                            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                            TemperatureC = Random.Shared.Next(-20, 55),
-                            Summary = summaries[Random.Shared.Next(summaries.Length)]
-                        })
-                    .ToArray();
-                return forecast;
-            })
-            .WithName("GetWeatherForecast")
-            .WithOpenApi();
+                OpenAiApi api = new(input.ApiKey);
+                ChatRequest request = new()
+                {
+                    Model = Model.GPT4_1106_Preview,
+                    Messages = new[] {new ChatMessage(ChatMessageRole.User, input.Prompt)}
+                };
+
+                logger.LogInformation("Sending request to OpenAI API with prompt: {Prompt}", input.Prompt);
+
+                ChatResult result = await api.Chat.CreateChatCompletionAsync(request);
+
+                logger.LogInformation("Received response from OpenAI API for prompt: {Prompt}", input.Prompt);
+
+                string? response = result.Choices?[0].Message?.Content;
+
+                logger.LogInformation("Returning response: {Response}", response);
+
+                return Results.Ok(response ?? "");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An unexpected error occurred while processing the request with prompt: {Prompt}",
+                    input.Prompt);
+                return Results.Problem(detail: $"An unexpected error occurred: {ex}",
+                    statusCode: StatusCodes.Status500InternalServerError);
+            }
+        });
 
         app.Run();
     }

@@ -1,6 +1,0 @@
-@GptMiddlewareApi_HostAddress = http://localhost:5179
-
-GET {{GptMiddlewareApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

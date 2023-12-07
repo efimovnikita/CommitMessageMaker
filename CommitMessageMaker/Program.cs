@@ -9,7 +9,6 @@ internal static class Program
 {
     private static IConfiguration? Configuration { get; set; }
 
-    // ReSharper disable once UnusedParameter.Local
     static async Task Main(string[] args)
     {
         string homePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);

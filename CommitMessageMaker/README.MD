@@ -66,10 +66,6 @@ The generated commit message will be output to your command line.
 
 Contributors are welcome! Please feel free to submit pull requests with any improvements or bug fixes. Remember to follow the existing coding style and explain your changes clearly.
 
-## License
-
-The Commit Message Maker is open-sourced under the MIT License. See the [LICENSE.md](LICENSE.md) file for more information (if not present, you should create this file).
-
 ## Issues and Support
 
 For bug reports, feature requests, or any questions, please open an issue in the GitHub repository. We're here to help.

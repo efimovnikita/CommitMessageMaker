@@ -23,14 +23,12 @@ internal static class Program
         Configuration = builder.Build();
 
         const string? keyParamName = "OpenAiApiKey";
-        const string? proxyModeParamName = "ProxyMode";
         const string? proxyAddressParamName = "ProxyAddress";
 
         string? keyValue = Configuration[$"Settings:{keyParamName}"];
-        string? proxyModeValue = Configuration[$"Settings:{proxyModeParamName}"];
         string? proxyAddressValue = Configuration[$"Settings:{proxyAddressParamName}"];
         
-        ValidateConfigParameters(keyValue, proxyAddressValue, proxyModeValue, configPath, keyParamName, proxyAddressParamName, proxyModeParamName);
+        ValidateConfigParameters(keyValue, proxyAddressValue, configPath, keyParamName, proxyAddressParamName);
 
         StringBuilder inputBuilder = new();
         
@@ -47,11 +45,11 @@ internal static class Program
         ApiRequestDto requestDto = new()
         {
             Prompt =
-                $"I want you to act as a commit message generator. I will provide you with information about the task and the prefix for the task code, and I would like you to generate an appropriate commit message using the conventional commit format. Do not write any explanations or other words, just reply with the commit message:\n{allInput}",
+                $"I want you to act as a commit message generator. I will provide you with information from git diff command, and I would like you to generate an appropriate commit message using the conventional commit format. Do not write any explanations or other words, just reply with the commit message:\n{allInput}",
             ApiKey = keyValue!
         };
         string response = await PostRequest(proxyAddressValue!, requestDto);
-        Console.WriteLine(response);
+        Console.Write(response);
     }
     
     private static async Task<string> PostRequest(string apiEndpoint, ApiRequestDto apiRequestDto)
@@ -70,10 +68,10 @@ internal static class Program
         return await response.Content.ReadAsStringAsync();
     }
 
-    private static void ValidateConfigParameters(string? keyValue, string? proxyIpValue, string? proxyModeValue,
-        string configPath, string? keyParamName, string? proxyIpParamName, string? proxyModeParamName)
+    private static void ValidateConfigParameters(string? keyValue, string? proxyIpValue,
+        string configPath, string? keyParamName, string? proxyIpParamName)
     {
-        if (new[] {keyValue, proxyIpValue, proxyModeValue}.Any(String.IsNullOrWhiteSpace)) return;
+        if (new[] {keyValue, proxyIpValue}.Any(String.IsNullOrWhiteSpace)) return;
         
         if (String.IsNullOrWhiteSpace(keyValue))
         {
@@ -83,11 +81,6 @@ internal static class Program
         if (String.IsNullOrWhiteSpace(proxyIpValue))
         {
             throw new ArgumentException($"Parameter must be set in '{configPath}'", proxyIpParamName);
-        }
-            
-        if (String.IsNullOrWhiteSpace(proxyModeValue))
-        {
-            throw new ArgumentException($"Parameter must be set in '{configPath}'", proxyModeParamName);
         }
     }
 }

@@ -34,6 +34,12 @@ public class Program
 
             try
             {
+                if ((String.IsNullOrWhiteSpace(input.Prompt) == false && String.IsNullOrWhiteSpace(input.ApiKey) == false) == false)
+                {
+                    return Results.Problem(detail: "The Prompt or the API key is empty",
+                        statusCode: StatusCodes.Status400BadRequest);
+                }
+                
                 OpenAiApi api = new(input.ApiKey);
                 ChatRequest request = new()
                 {

@@ -32,13 +32,6 @@ internal static class Program
         
         ValidateConfigParameters(keyValue, proxyAddressValue, proxyModeValue, configPath, keyParamName, proxyAddressParamName, proxyModeParamName);
 
-        bool proxyMode = Boolean.Parse(proxyModeValue!);
-        
-        if (proxyMode == false)
-        {
-            throw new NotImplementedException("Proxy mode equals 'false' is not implemented");
-        }
-
         StringBuilder inputBuilder = new();
         
         using (StreamReader reader = new(Console.OpenStandardInput(), Console.InputEncoding))

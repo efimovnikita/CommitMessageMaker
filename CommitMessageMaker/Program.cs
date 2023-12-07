@@ -44,7 +44,7 @@ internal static class Program
         ApiRequestDto requestDto = new()
         {
             Prompt =
-                $"I want you to act as a commit message generator. I will provide you with information from git diff command, and I would like you to generate an appropriate commit message using the conventional commit format. Do not write any explanations or other words, just reply with the commit message:\n{allInput}",
+                $"I want you to act as a commit message generator. I will provide you with information from git diff command, and I would like you to generate an appropriate commit message using the conventional commit format. Do not use markdown format in your answer. Send just plain text. Do not write any explanations or other words, just reply with the commit message:\n{allInput}",
             ApiKey = keyValue!
         };
         string response = await PostRequest(proxyAddressValue!, requestDto);

@@ -37,7 +37,7 @@ public class Program
                 OpenAiApi api = new(input.ApiKey);
                 ChatRequest request = new()
                 {
-                    Model = Model.GPT4_1106_Preview,
+                    Model = Model.ChatGPTTurbo1106,
                     Messages = new[] {new ChatMessage(ChatMessageRole.User, input.Prompt)}
                 };
 
